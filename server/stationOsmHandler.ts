@@ -41,7 +41,6 @@ async function ParseData() {
           for (const member of relation.members) {
             const memberData = nodes[member.ref]
             if (memberData != undefined) {
-              console.log(memberData)
               const newStation = {
                 name: name,
                 coords: {
@@ -49,7 +48,6 @@ async function ParseData() {
                   lon: memberData.lon
                 }
               }
-              console.log(newStation)
               newStations[newStation.name] = newStation
               break;
             }
