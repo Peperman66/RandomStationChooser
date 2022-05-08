@@ -1,4 +1,7 @@
 export type StationData = {
   name: string,
-  coords: number[]
+  coords: {
+    lat: number,
+    lon: number
+  }
 }
