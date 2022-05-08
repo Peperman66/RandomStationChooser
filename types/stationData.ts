@@ -3,5 +3,6 @@ export type StationData = {
   coords: {
     lat: number,
     lon: number
-  }
+  },
+  nodeId: number
 }
