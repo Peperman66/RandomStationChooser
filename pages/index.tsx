@@ -5,13 +5,16 @@ import { StationData } from '../types/stationData'
 
 const Home: NextPage = () => {
   const [station, setStationData] = useState<StationData>()
+  const [inProgress, setInProgress] = useState<boolean>(false)
   const center = {lat: station?.coords.lat || 0, lng: station?.coords.lon || 0}
 
   const getRandomStation = () => {
+    setInProgress(true)
     fetch("/api/station/getrandomdata")
     .then(raw => raw.json())
     .then(data => {
       setStationData(data)
+      setInProgress(false)
     })
   }
 
