@@ -27,9 +27,9 @@ const Home: NextPage = () => {
         <h1 className="text-6xl pb-4">Výběr náhodné zastávky v Praze</h1>
         <hr className='border-black w-full border-2' />
         <button className={'bg-gray-300 rounded-lg border p-1 text-3xl mt-4' + (inProgress ? " text-gray-100" : "")} onClick={getRandomStation} disabled={inProgress}>{inProgress ? "Vybírám..." : "Vybrat zastávku"}</button>
-        <span className='text-xl'>Vybraná zastávka:</span>
-        <span className='font-bold text-2xl'>{station?.name}</span>
         {station != undefined && <>
+          <span className='text-xl'>Vybraná zastávka:</span>
+          <span className='font-bold text-2xl'>{station?.name}</span>
           <a className='text-blue-700 underline' href={getMapUrl()} target="_blank">Odkaz na zastávku</a>
           <CustomMap center={center}/>
         </>}
@@ -39,6 +39,7 @@ const Home: NextPage = () => {
 }
 
 const CustomMap: FC<{center: {lat: number, lng: number}}> = (props: {center: {lat: number, lng: number}}) => {
+  //Known bug: POILayer gets always duplicated when redrawing AND there are somehow two Map components present in the webpage
   return (<>
     <Map zoom={17} center={props.center} height={"700px"} width={"1200px"} loaderApiConfig={{poi: true}}>
       <MouseControl zoom={true} pan={true} wheel={true}/>
