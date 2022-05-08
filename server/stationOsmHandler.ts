@@ -56,7 +56,6 @@ async function ParseData() {
           }
         })
         stations = newStations
-        console.log(stations)
         resolve()
       }
     })
