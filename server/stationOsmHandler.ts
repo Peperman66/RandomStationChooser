@@ -26,7 +26,7 @@ async function ParseData() {
       filePath: osmDataFile,
       format: 'pbf',
       node: function(node: any) {
-        if (node.tags.public_transport == 'stop_position' || node.tags.highway == 'bus_stop') {
+        if (node.tags.public_transport == 'stop_location' || node.tags.highway == 'bus_stop') {
           nodes[node.id as number] = node
         }
       },
@@ -46,7 +46,8 @@ async function ParseData() {
                 coords: {
                   lat: memberData.lat,
                   lon: memberData.lon
-                }
+                },
+                nodeId: memberData.id
               }
               newStations[newStation.name] = newStation
               break;
