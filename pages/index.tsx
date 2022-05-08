@@ -1,15 +1,22 @@
 import type { NextPage } from 'next'
 import { FC, useState } from 'react'
+import { Map, Marker, MarkerLayer, MouseControl, POILayer, SyncControl } from 'react-mapycz'
 import { StationData } from '../types/stationData'
 
 const Home: NextPage = () => {
   const [station, setStationData] = useState<StationData>()
+  const center = {lat: station?.coords.lat || 0, lng: station?.coords.lon || 0}
+
   const getRandomStation = () => {
     fetch("/api/station/getrandomdata")
     .then(raw => raw.json())
     .then(data => {
       setStationData(data)
     })
+  }
+
+  const getMapUrl = (): string => {
+    return `https://mapy.cz/zakladni?x=${station?.coords.lon}&y=${station?.coords.lat}&z=16`
   }
   return (
     <>
@@ -26,6 +33,16 @@ const Home: NextPage = () => {
       </div>
     </>
   )
+}
+
+const CustomMap: FC<{center: {lat: number, lng: number}}> = (props: {center: {lat: number, lng: number}}) => {
+  return (<>
+    <Map zoom={17} center={props.center} height={"700px"} width={"1200px"} loaderApiConfig={{poi: true}}>
+      <MouseControl zoom={true} pan={true} wheel={true}/>
+      <POILayer id="poiLayer"/>
+      <SyncControl />
+    </Map>
+  </>)
 }
 
 export default Home
