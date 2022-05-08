@@ -1,10 +1,22 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
+import { useState } from 'react'
+import { stationData } from '../types/stationData'
 
 const Home: NextPage = () => {
+  const [station, setStationData] = useState<stationData>()
+  const getRandomStation = () => {
+    fetch("/api/station/getrandomdata")
+    .then(raw => raw.json())
+    .then(data => {
+      setStationData(data)
+    })
+  }
   return (
-    <></>
+    <>
+      <button onClick={getRandomStation}>Vybrat stanici</button>
+      <span>Vybraná stanice:</span>
+      <span>{station?.name}</span>
+    </>
   )
 }
 
