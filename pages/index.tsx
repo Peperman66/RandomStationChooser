@@ -30,7 +30,7 @@ const Home: NextPage = () => {
         {station != undefined && <>
           <span className='text-xl'>Vybraná zastávka:</span>
           <span className='font-bold text-2xl'>{station?.name}</span>
-          <a className='text-blue-700 underline' href={getMapUrl()} target="_blank">Odkaz na zastávku</a>
+          <a className='text-blue-700 underline' href={getMapUrl()} target="_blank" rel='noreferrer'>Odkaz na zastávku</a>
           <CustomMap center={center}/>
         </>}
       </div>
