@@ -6,6 +6,8 @@ import fetch from 'node-fetch'
 
 import prisma from "../lib/prisma"
 
+//When running this script, type: "module" must be set in package.json
+
 const queries: PrismaPromise<Prisma.BatchPayload>[] = []
 queries.push(prisma.station.deleteMany({}))
 
