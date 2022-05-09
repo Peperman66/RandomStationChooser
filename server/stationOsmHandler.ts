@@ -14,9 +14,8 @@ function ParseData() {
   .then(rawData => rawData.body)
   .then(data => data?.pipe(osm))
   .then(data => {
-    console.log(data);
+    console.log("Downloading OSM data...");
     return data.pipe(through.obj((items, enc, next) => {
-      console.log(items.length)
       items.forEach((item: any) => {
         if (item.type === 'node') {
           if (item.tags.highway == 'bus_stop' || item.tags.railway == 'tram_stop' || item.tags.railway == 'halt' || item.tags.railway == 'station' || item.tags.railway == 'stop') {
@@ -35,7 +34,7 @@ function ParseData() {
   .then(data => {
     return new Promise<void>((resolve) => {
       data.on('finish', () => {
-        console.log("Parsing data")
+        console.log("Parsing OSm data...")
         for (const nodeId of Object.keys(nodes)) {
           const node = nodes[parseInt(nodeId)]
           const name = node.tags.name as string
@@ -50,6 +49,7 @@ function ParseData() {
           newStations[newStation.name] = newStation
         }
         stations = newStations
+        console.log(`Parsing OSM data finished! Total stops: ${GetStationsCount()}`)
         resolve()
       })
     })
