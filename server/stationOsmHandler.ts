@@ -1,68 +1,59 @@
-import { notDeepEqual } from 'assert'
-import { existsSync, writeFile } from 'fs'
 import { StationData } from '../types/stationData'
 //@ts-ignore - osm-read has no types
-const osmRead = require('osm-read')
-let osmDataFile: string = '.\\osm_data\\praha-latest.osm.pbf'
+const parseOsm = require('osm-pbf-parser')
+import through from 'through2'
+import fetch from 'node-fetch'
 let stations: {[name: string]: StationData} = {}
 
-async function DownloadData() {
-  const filePath = '.\\osm_data\\praha-latest.osm.pbf'
-  const rawData = await fetch('http://download.openstreetmap.fr/extracts/europe/czech_republic/praha-latest.osm.pbf')
-  const data = await rawData.arrayBuffer()
-  console.log(data.byteLength)
-  return new Promise<void>((resolve, reject) => {
-    writeFile(filePath, new Int8Array(data), () => resolve())
-    osmDataFile = filePath
-  })
-}
-
-async function ParseData() {
-  return new Promise<void>(resolve => {
-    const newStations: {[name: string]: StationData} = {}
-    const relations: any[] = []
-    const nodes: {[id: number]: any} = {}
-    osmRead.parse({
-      filePath: osmDataFile,
-      format: 'pbf',
-      node: function(node: any) {
-        if (node.tags.public_transport == 'stop_location' || node.tags.highway == 'bus_stop') {
-          nodes[node.id as number] = node
-        }
-      },
-      relation: function(relation: any) {
-        if (relation.tags.public_transport === 'stop_area') {
-          relations.push(relation)
-        }
-      },
-      endDocument: function() {
-        relations.forEach(relation => {
-          const name = relation.tags.name
-          for (const member of relation.members) {
-            const memberData = nodes[member.ref]
-            if (memberData != undefined) {
-              const newStation = {
-                name: name,
-                coords: {
-                  lat: memberData.lat,
-                  lon: memberData.lon
-                },
-                nodeId: memberData.id
-              }
-              newStations[newStation.name] = newStation
-              break;
-            }
+function ParseData() {
+  const newStations: {[name: string]: StationData} = {}
+  const relations: any[] = []
+  const nodes: {[id: number]: any} = {}
+  const osm = parseOsm()
+  return fetch('http://download.openstreetmap.fr/extracts/europe/czech_republic/praha-latest.osm.pbf')
+  .then(rawData => rawData.body)
+  .then(data => data?.pipe(osm))
+  .then(data => {
+    console.log(data);
+    return data.pipe(through.obj((items, enc, next) => {
+      console.log(items.length)
+      items.forEach((item: any) => {
+        if (item.type === 'node') {
+          if (item.tags.highway == 'bus_stop' || item.tags.railway == 'tram_stop' || item.tags.railway == 'halt' || item.tags.railway == 'station' || item.tags.railway == 'stop') {
+            nodes[item.id as number] = item
           }
-        })
+        } /*else if (item.type === 'relation') {
+          //Not neded for now
+          if (item.tags.public_transport === 'stop_area') {
+            relations.push(item)
+          }
+        }*/
+      })
+      next()
+    }))
+  })
+  .then(data => {
+    return new Promise<void>((resolve) => {
+      data.on('finish', () => {
+        console.log("Parsing data")
+        for (const nodeId of Object.keys(nodes)) {
+          const node = nodes[parseInt(nodeId)]
+          const name = node.tags.name as string
+          const newStation = {
+            name: name,
+            coords: {
+              lat: node.lat,
+              lon: node.lon
+            },
+            nodeId: node.id
+          }
+          newStations[newStation.name] = newStation
+        }
         stations = newStations
         resolve()
-      }
+      })
     })
   })
-}
-
-function CheckFileExists(): boolean {
-  return osmDataFile !== '' && existsSync(osmDataFile)
 }
 
 function GetStationsCount(): number {
@@ -74,14 +65,12 @@ function CheckParsingDone(): boolean {
 }
 
 export async function GetRandomStation() {
-  if (!CheckFileExists()) {
-    await DownloadData()
-  }
   if (!CheckParsingDone()) {
     await ParseData()
   }
 
   const stationCount = GetStationsCount()
 
+  console.log(stationCount)
   return stations[Object.keys(stations)[Math.floor(Math.random() * stationCount)]]
 }
