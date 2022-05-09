@@ -2,12 +2,12 @@
   "name": "random-station-chooser",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "parse-osm": "node --loader ts-node/esm --experimental-modules --no-warnings -r tsconfig-paths/register scripts/parse-osm.ts"
   },
   "dependencies": {
     "@prisma/client": "^3.13.0",
