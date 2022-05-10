@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import { FC, useState } from 'react'
 import { Map, Marker, MarkerLayer, MouseControl, POILayer, SyncControl } from 'react-mapycz'
+import { Map, Marker, MarkerLayer, MouseControl, POILayer, SyncControl, ZoomControl } from 'react-mapycz'
 import { StationData } from '../types/stationData'
 
 const Home: NextPage = () => {
@@ -42,8 +43,11 @@ const CustomMap: FC<{center: {lat: number, lng: number}}> = (props: {center: {la
   //Known bug: POILayer gets always duplicated when redrawing AND there are somehow two Map components present in the webpage
   return (<>
     <Map zoom={17} center={props.center} height={"700px"} width={"1200px"} loaderApiConfig={{poi: true}}>
+    <Map zoom={17} center={props.center} height={"100%"} loaderApiConfig={{poi: true}}>
       <MouseControl zoom={true} pan={true} wheel={true}/>
       <POILayer id="poiLayer"/>
+      <ZoomControl />
+      <POILayer/>
       <SyncControl />
     </Map>
   </>)
