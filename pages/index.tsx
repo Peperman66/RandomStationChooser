@@ -1,6 +1,5 @@
 import type { NextPage } from 'next'
 import { FC, useState } from 'react'
-import { Map, Marker, MarkerLayer, MouseControl, POILayer, SyncControl } from 'react-mapycz'
 import { Map, Marker, MarkerLayer, MouseControl, POILayer, SyncControl, ZoomControl } from 'react-mapycz'
 import { StationData } from '../types/stationData'
 
@@ -24,7 +23,7 @@ const Home: NextPage = () => {
   }
   return (
     <>
-      <div className='flex flex-col items-center'>
+      <div className='flex flex-col items-center h-screen'>
         <h1 className="text-6xl pb-4">Výběr náhodné zastávky v Praze</h1>
         <hr className='border-black w-full border-2' />
         <button className={'bg-gray-300 rounded-lg border p-1 text-3xl mt-4' + (inProgress ? " text-gray-100" : "")} onClick={getRandomStation} disabled={inProgress}>{inProgress ? "Vybírám..." : "Vybrat zastávku"}</button>
@@ -32,7 +31,9 @@ const Home: NextPage = () => {
           <span className='text-xl'>Vybraná zastávka:</span>
           <span className='font-bold text-2xl'>{station?.name}</span>
           <a className='text-blue-700 underline' href={getMapUrl()} target="_blank" rel='noreferrer'>Odkaz na zastávku</a>
-          <CustomMap center={center}/>
+          <div className='w-full flex-auto px-3 pb-3 h-full'>
+            <CustomMap center={center}/>
+          </div>
         </>}
       </div>
     </>
@@ -42,10 +43,9 @@ const Home: NextPage = () => {
 const CustomMap: FC<{center: {lat: number, lng: number}}> = (props: {center: {lat: number, lng: number}}) => {
   //Known bug: POILayer gets always duplicated when redrawing AND there are somehow two Map components present in the webpage
   return (<>
-    <Map zoom={17} center={props.center} height={"700px"} width={"1200px"} loaderApiConfig={{poi: true}}>
     <Map zoom={17} center={props.center} height={"100%"} loaderApiConfig={{poi: true}}>
+      <SyncControl />
       <MouseControl zoom={true} pan={true} wheel={true}/>
-      <POILayer id="poiLayer"/>
       <ZoomControl />
       <POILayer/>
       <SyncControl />
