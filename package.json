@@ -13,7 +13,7 @@
     "@prisma/client": "^3.13.0",
     "@types/through2": "^2.0.36",
     "autoprefixer": "^10.4.7",
-    "next": "12.1.6",
+    "next": "13.5.0",
     "node-fetch": "^3.2.4",
     "osm-pbf-parser": "^2.3.0",
     "postcss": "^8.4.13",
